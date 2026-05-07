@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Expecting · Task Manager</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#1d4664;--navy2:#143552;--lavender:#9474cc;--teal:#73C0CA;--amber:#FEC006;
+  --bg:#f7f9fc;--white:#fff;--line:#d6dee8;--line-soft:#e8edf3;--bg-soft:#f0f4f9;
+  --text:#1d4664;--text-soft:#4a6883;--text-light:#8aa1b8;
+  --shadow:0 8px 24px rgba(29,70,100,.08);--shadow-lg:0 24px 60px rgba(29,70,100,.14);
+}
+html,body{min-height:100%;background:var(--bg);color:var(--text);font-family:'Montserrat',system-ui,sans-serif;font-size:13px;line-height:1.6;-webkit-font-smoothing:antialiased}
+body{background:radial-gradient(ellipse at top right,rgba(148,116,204,.05),transparent 50%),radial-gradient(ellipse at bottom left,rgba(115,192,202,.05),transparent 50%),var(--bg)}
+
+/* HEADER */
+.site-header{background:rgba(255,255,255,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line-soft);padding:14px 40px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-logo svg{height:28px;width:auto;display:block}
+.brand-divider{width:1px;height:20px;background:var(--line)}
+.brand-label{font-size:13px;font-weight:700;color:var(--navy);letter-spacing:-.01em}
+.brand-label span{color:var(--lavender);font-style:italic;font-weight:500}
+.header-right{display:flex;align-items:center;gap:10px}
+.header-date{font-size:11px;color:var(--text-light);font-weight:600;text-transform:uppercase;letter-spacing:.08em}
+
+/* CONTAINER */
+.container{max-width:1280px;margin:0 auto;padding:36px 40px 64px}
+
+/* PAGE TITLE */
+.page-hero{margin-bottom:28px}
+.eyebrow{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.18em;color:var(--amber);margin-bottom:8px}
+.page-hero h1{font-size:28px;font-weight:700;letter-spacing:-.02em;color:var(--navy);line-height:1.2}
+.page-hero h1 em{font-style:italic;color:var(--lavender);font-weight:500}
+.page-hero p{color:var(--text-soft);font-size:13px;margin-top:6px;font-weight:500}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px}
+.stat{background:var(--white);border:1px solid var(--line-soft);border-radius:12px;padding:14px 18px;position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s}
+.stat:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.stat::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.stat.s-navy::before{background:var(--navy)}
+.stat.s-amber::before{background:var(--amber)}
+.stat.s-lavender::before{background:var(--lavender)}
+.stat.s-teal::before{background:var(--teal)}
+.stat-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.13em;color:var(--text-light);margin-bottom:6px}
+.stat-val{font-size:28px;font-weight:700;color:var(--navy);letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+
+/* TOOLBAR */
+.toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.toolbar-left{display:flex;align-items:center;gap:8px;flex-wrap:wrap;flex:1}
+.search-wrap{position:relative}
+.search-wrap input{padding-left:32px;width:210px}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--text-light);pointer-events:none;font-size:14px}
+
+input[type=text],input[type=date],select,textarea{height:34px;padding:0 10px;border:1.5px solid var(--line);border-radius:8px;font-family:inherit;font-size:12px;color:var(--text);background:var(--white);outline:none;transition:border-color .15s,box-shadow .15s}
+input[type=text]:focus,input[type=date]:focus,select:focus,textarea:focus{border-color:var(--navy);box-shadow:0 0 0 3px rgba(29,70,100,.08)}
+
+.btn{height:34px;padding:0 16px;border-radius:8px;border:none;font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px;letter-spacing:.03em;white-space:nowrap}
+.btn-primary{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;box-shadow:0 4px 14px rgba(29,70,100,.25)}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(29,70,100,.35)}
+.btn-ghost{background:transparent;border:1.5px solid var(--line);color:var(--text-soft)}
+.btn-ghost:hover{border-color:var(--navy);color:var(--navy)}
+.btn-sm{height:28px;padding:0 10px;font-size:11px;border-radius:6px}
+.btn-danger{background:transparent;border:1.5px solid #f0a0a0;color:#c44;height:27px;padding:0 9px;font-size:11px;border-radius:6px}
+.btn-danger:hover{background:#fff0f0}
+
+/* TABLE */
+.table-card{background:var(--white);border:1px solid var(--line-soft);border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+.tbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.tbl thead th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.13em;color:var(--text-light);background:var(--bg-soft);padding:11px 16px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--line)}
+.tbl tbody td{padding:11px 16px;border-bottom:1px solid var(--line-soft);vertical-align:middle}
+.tbl tbody tr:last-child td{border-bottom:none}
+.tbl tbody tr{transition:background .1s}
+.tbl tbody tr:hover{background:#fafbfd}
+
+/* PILLS */
+.pill{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:10.5px;font-weight:700;white-space:nowrap}
+.p-todo{background:rgba(138,161,184,.15);color:#4a6883}
+.p-progress{background:rgba(115,192,202,.2);color:#2c8993}
+.p-done{background:rgba(100,180,100,.18);color:#2a7a2a}
+.p-high{background:rgba(220,80,80,.14);color:#a83030}
+.p-medium{background:rgba(254,192,6,.18);color:#8a6000}
+.p-low{background:rgba(115,192,202,.18);color:#2c7a88}
+
+.dept-pill{display:inline-flex;align-items:center;padding:3px 9px;border-radius:5px;font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.d-marketing{background:rgba(148,116,204,.15);color:#6b4ea8}
+.d-sales{background:rgba(254,192,6,.18);color:#8a6000}
+.d-product{background:rgba(29,70,100,.12);color:#1d4664}
+.d-general{background:rgba(138,161,184,.15);color:#4a6883}
+
+/* STATUS SELECT inline */
+.status-select{border:none!important;background:transparent!important;font-family:inherit;font-size:10.5px;font-weight:700;cursor:pointer;padding:3px 6px!important;height:auto!important;box-shadow:none!important;border-radius:20px}
+
+/* AVATAR */
+.avatar{width:28px;height:28px;border-radius:50%;color:#fff;font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 4px rgba(0,0,0,.1)}
+.assignee-cell{display:flex;align-items:center;gap:7px}
+
+.task-name{font-weight:600;color:var(--navy);line-height:1.4}
+.task-desc{font-size:11px;color:var(--text-light);margin-top:2px;line-height:1.4}
+.due-over{color:#c44;font-weight:700}
+.due-soon{color:#a87800;font-weight:700}
+.due-ok{color:var(--text-soft);font-weight:500}
+
+.actions{display:flex;align-items:center;gap:4px;opacity:0;transition:opacity .15s}
+.tbl tbody tr:hover .actions{opacity:1}
+
+.empty-state{text-align:center;padding:60px 24px}
+.empty-icon{font-size:40px;margin-bottom:12px;display:block}
+.empty-state h3{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:6px}
+.empty-state p{color:var(--text-soft);font-size:13px;font-weight:500}
+
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(29,70,100,.4);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(2px)}
+.modal{background:var(--white);border-radius:16px;width:100%;max-width:500px;overflow:hidden;box-shadow:var(--shadow-lg);animation:modalIn .2s ease}
+@keyframes modalIn{from{opacity:0;transform:scale(.96) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-top{height:4px;background:linear-gradient(90deg,var(--navy),var(--lavender),var(--teal),var(--amber))}
+.modal-header{padding:20px 24px 0;display:flex;justify-content:space-between;align-items:center}
+.modal-header h3{font-size:17px;font-weight:700;color:var(--navy)}
+.modal-body{padding:20px 24px}
+.modal-footer{padding:0 24px 22px;display:flex;justify-content:flex-end;gap:8px}
+.field{margin-bottom:14px}
+.field label{display:block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.13em;color:var(--text-light);margin-bottom:5px}
+.field input[type=text],.field input[type=date],.field select,.field textarea{width:100%}
+.field textarea{height:72px;resize:vertical;padding:8px 10px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* CONFIRM DIALOG */
+.confirm-box{background:var(--white);border-radius:12px;width:100%;max-width:340px;padding:28px 28px 22px;text-align:center;box-shadow:var(--shadow-lg)}
+.confirm-box h4{font-size:16px;font-weight:700;color:var(--navy);margin-bottom:8px}
+.confirm-box p{color:var(--text-soft);font-size:13px;margin-bottom:20px;font-weight:500}
+.confirm-box .actions{display:flex;gap:8px;justify-content:center;opacity:1}
+
+@media(max-width:900px){
+  .container{padding:24px 20px}
+  .site-header{padding:14px 20px}
+  .stats{grid-template-columns:1fr 1fr}
+  .toolbar-left{gap:6px}
+  #search{width:150px}
+}
+@media(max-width:600px){
+  .stats{grid-template-columns:1fr 1fr}
+  .tbl thead th:nth-child(2),.tbl tbody td:nth-child(2){display:none}
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="brand">
+    <div class="brand-logo">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 325.939 55.539">
+        <path d="M177.965,38.815a13.8,13.8,0,0,0-7.424-1.921,15.142,15.142,0,0,0-7.75,1.954,13.97,13.97,0,0,0-5.275,5.438,16.2,16.2,0,0,0-1.921,8.011,15.468,15.468,0,0,0,2.019,7.945,14.36,14.36,0,0,0,5.6,5.438,16.965,16.965,0,0,0,13.514,1.009,15.3,15.3,0,0,0,4.689-2.442,1.954,1.954,0,0,0,.879-1.726,2.638,2.638,0,0,0-1.009-1.824,2.442,2.442,0,0,0-1.693-.586,3.159,3.159,0,0,0-1.791.651,10.909,10.909,0,0,1-2.9,1.465,10.485,10.485,0,0,1-3.517.651,11.137,11.137,0,0,1-5.6-1.4,10.062,10.062,0,0,1-5.047-7.262h21.036a2.54,2.54,0,0,0,1.824-.684,2.312,2.312,0,0,0,.716-1.758,17.421,17.421,0,0,0-1.628-7.717,12.472,12.472,0,0,0-4.722-5.275m-12.83,4.233a10.1,10.1,0,0,1,5.406-1.4,8.076,8.076,0,0,1,7.685,4.722,11.2,11.2,0,0,1,.977,3.419H160.772a11.43,11.43,0,0,1,.944-2.963,8.922,8.922,0,0,1,3.419-3.81" transform="translate(-104.555 -24.878)" fill="#1d4664"/>
+        <path d="M272.011,53.119l8.336-10.941a3.452,3.452,0,0,0,.814-2.051,2.638,2.638,0,0,0-.586-1.791,2.214,2.214,0,0,0-1.824-.749,3.029,3.029,0,0,0-1.107.2,2.312,2.312,0,0,0-.944.749L268.56,49.374l-9.085-10.844a2.573,2.573,0,0,0-2.117-.944,2.247,2.247,0,0,0-1.824.716,2.41,2.41,0,0,0-.554,1.758,3.256,3.256,0,0,0,.782,1.921l9.118,10.811-8.564,10.746a3.257,3.257,0,0,0-.781,1.986,2.41,2.41,0,0,0,.651,1.693,2.247,2.247,0,0,0,1.758.684,2.638,2.638,0,0,0,1.986-.879l8.369-10.55,8.792,10.55a2.084,2.084,0,0,0,.944.716,3.289,3.289,0,0,0,1.042.163,2.507,2.507,0,0,0,1.791-.651,2.28,2.28,0,0,0,.716-1.628,2.963,2.963,0,0,0-.814-1.954Z" transform="translate(-171.574 -25.342)" fill="#1d4664"/>
+        <path d="M25.185,46.567H2.717a3.517,3.517,0,1,1,0-7H25.185a3.517,3.517,0,0,1,0,7" transform="translate(1.138 -26.671)" fill="#1d4664"/>
+        <path d="M104.434,43.117a3.517,3.517,0,1,1-3.517-3.517,3.517,3.517,0,0,1,3.517,3.517" transform="translate(-65.313 -26.705)" fill="#fec006"/>
+        <path d="M25.185,116.267H2.717a3.517,3.517,0,1,1,0-7H25.185a3.517,3.517,0,0,1,0,7" transform="translate(1.138 -73.674)" fill="#1d4664"/>
+        <path d="M104.434,112.884a3.517,3.517,0,1,1-3.517-3.484,3.517,3.517,0,0,1,3.517,3.484" transform="translate(-65.313 -73.776)" fill="#9474cc"/>
+        <path d="M10.046,81.467H2.817a3.517,3.517,0,1,1,0-7h7.229a3.517,3.517,0,1,1,0,7" transform="translate(1.071 -50.206)" fill="#73c0ca"/>
+        <path d="M57.334,78.184A3.517,3.517,0,1,1,53.849,74.7a3.517,3.517,0,0,1,3.484,3.484" transform="translate(-33.55 -50.375)" fill="#73c0ca"/>
+      </svg>
+    </div>
+    <div class="brand-divider"></div>
+    <div class="brand-label">Internal <em>Task Manager</em></div>
+  </div>
+  <div class="header-right">
+    <span class="header-date" id="header-date"></span>
+  </div>
+</header>
+
+<div class="container">
+
+  <div class="page-hero">
+    <div class="eyebrow">Internal tools · Team workspace</div>
+    <h1>Task <em>Manager</em></h1>
+    <p>Manage tasks across Marketing, Sales, Product, and General for Nadav, Dana, Danielle, and Or.</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat s-navy"><div class="stat-label">Total tasks</div><div class="stat-val" id="st-total">0</div></div>
+    <div class="stat s-amber"><div class="stat-label">To Do</div><div class="stat-val" id="st-todo">0</div></div>
+    <div class="stat s-lavender"><div class="stat-label">In Progress</div><div class="stat-val" id="st-prog">0</div></div>
+    <div class="stat s-teal"><div class="stat-label">Done</div><div class="stat-val" id="st-done">0</div></div>
+  </div>
+
+  <div class="toolbar">
+    <div class="toolbar-left">
+      <div class="search-wrap">
+        <span class="search-icon">⌕</span>
+        <input type="text" id="search" placeholder="Search tasks…">
+      </div>
+      <select id="f-status"><option value="">All statuses</option><option>To Do</option><option>In Progress</option><option>Done</option></select>
+      <select id="f-priority"><option value="">All priorities</option><option>High</option><option>Medium</option><option>Low</option></select>
+      <select id="f-dept"><option value="">All departments</option><option>Marketing</option><option>Sales</option><option>Product</option><option>General</option></select>
+      <select id="f-assignee"><option value="">All members</option><option>Nadav</option><option>Dana</option><option>Danielle</option><option>Or</option></select>
+    </div>
+    <button class="btn btn-primary" onclick="openModal()">+ New task</button>
+  </div>
+
+  <div class="table-card">
+    <table class="tbl">
+      <thead>
+        <tr>
+          <th style="width:34%">Task</th>
+          <th>Department</th>
+          <th>Assignee</th>
+          <th>Priority</th>
+          <th>Status</th>
+          <th>Due date</th>
+          <th style="width:80px"></th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+
+</div>
+
+<!-- NEW / EDIT MODAL -->
+<div class="overlay" id="overlay" style="display:none" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-top"></div>
+    <div class="modal-header">
+      <h3 id="modal-title">New task</h3>
+      <button class="btn btn-ghost btn-sm" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="field"><label>Task name *</label><input type="text" id="f-name" placeholder="What needs to be done?"></div>
+      <div class="field"><label>Description</label><textarea id="f-desc" placeholder="Optional details…"></textarea></div>
+      <div class="row2">
+        <div class="field"><label>Department</label>
+          <select id="f-dept2"><option>Marketing</option><option>Sales</option><option>Product</option><option>General</option></select>
+        </div>
+        <div class="field"><label>Assignee</label>
+          <select id="f-assign2"><option>Nadav</option><option>Dana</option><option>Danielle</option><option>Or</option><option>Unassigned</option></select>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Priority</label>
+          <select id="f-pri2"><option>High</option><option selected>Medium</option><option>Low</option></select>
+        </div>
+        <div class="field"><label>Status</label>
+          <select id="f-stat2"><option selected>To Do</option><option>In Progress</option><option>Done</option></select>
+        </div>
+      </div>
+      <div class="field"><label>Due date</label><input type="date" id="f-due" style="width:100%"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveTask()">Save task</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM DELETE -->
+<div class="overlay" id="confirm-overlay" style="display:none">
+  <div class="confirm-box">
+    <h4>Delete task?</h4>
+    <p>This action cannot be undone.</p>
+    <div class="actions">
+      <button class="btn btn-ghost" onclick="closeConfirm()">Cancel</button>
+      <button class="btn btn-primary" style="background:#c44;box-shadow:none" onclick="confirmDelete()">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'expecting.tasks.v3';
+const TEAM = ['Nadav','Dana','Danielle','Or','Unassigned'];
+const AVATAR_COLORS = {Nadav:'#1d4664',Dana:'#9474cc',Danielle:'#73C0CA',Or:'#FEC006',Unassigned:'#8aa1b8'};
+
+let tasks = [];
+let editId = null;
+let deleteId = null;
+
+const SAMPLE = [
+  {id:'s1',name:'Set up Q2 marketing calendar',desc:'Plan all campaign dates and channels for Q2',dept:'Marketing',assignee:'Dana',priority:'High',status:'In Progress',due:'2026-05-20',created:Date.now()},
+  {id:'s2',name:'Update agency onboarding deck',desc:'',dept:'Product',assignee:'Danielle',priority:'Medium',status:'To Do',due:'2026-05-25',created:Date.now()},
+  {id:'s3',name:'Outreach to 10 new surrogacy agencies',desc:'Focus on East Coast agencies first',dept:'Sales',assignee:'Or',priority:'High',status:'To Do',due:'2026-05-15',created:Date.now()},
+  {id:'s4',name:'Review Aimee AI chat scripts',desc:'',dept:'Product',assignee:'Nadav',priority:'Low',status:'Done',due:'2026-05-01',created:Date.now()},
+  {id:'s5',name:'Monthly newsletter draft',desc:'',dept:'Marketing',assignee:'Dana',priority:'Medium',status:'To Do',due:'2026-05-30',created:Date.now()},
+  {id:'s6',name:'Q2 sales pipeline review',desc:'Review all open deals and update CRM',dept:'Sales',assignee:'Or',priority:'High',status:'To Do',due:'2026-05-12',created:Date.now()},
+];
+
+function load() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    tasks = saved ? JSON.parse(saved) : [];
+  } catch(e) { tasks = []; }
+  if (!tasks.length) { tasks = SAMPLE; save(); }
+  render();
+}
+
+function save() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks)); } catch(e) {}
+}
+
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+
+function initials(name) {
+  if (!name || name === 'Unassigned') return '?';
+  return name.slice(0,2).toUpperCase();
+}
+
+function dueLabel(due) {
+  if (!due) return '<span style="color:var(--text-light)">—</span>';
+  const d = new Date(due + 'T00:00:00'), today = new Date();
+  today.setHours(0,0,0,0);
+  const diff = Math.round((d - today) / 864e5);
+  const fmt = d.toLocaleDateString('en-US', {month:'short', day:'numeric'});
+  if (diff < 0) return `<span class="due-over">⚠ ${fmt}</span>`;
+  if (diff === 0) return `<span class="due-soon">Today</span>`;
+  if (diff <= 3) return `<span class="due-soon">${fmt}</span>`;
+  return `<span class="due-ok">${fmt}</span>`;
+}
+
+function statusClass(s) { return s==='To Do'?'p-todo':s==='In Progress'?'p-progress':'p-done'; }
+function priorityClass(p) { return p==='High'?'p-high':p==='Medium'?'p-medium':'p-low'; }
+function deptClass(d) { return 'd-' + d.toLowerCase(); }
+
+function filtered() {
+  const q  = document.getElementById('search').value.toLowerCase();
+  const fs = document.getElementById('f-status').value;
+  const fp = document.getElementById('f-priority').value;
+  const fd = document.getElementById('f-dept').value;
+  const fa = document.getElementById('f-assignee').value;
+  return tasks.filter(t =>
+    (!q  || t.name.toLowerCase().includes(q) || (t.desc||'').toLowerCase().includes(q)) &&
+    (!fs || t.status === fs) &&
+    (!fp || t.priority === fp) &&
+    (!fd || t.dept === fd) &&
+    (!fa || t.assignee === fa)
+  );
+}
+
+function render() {
+  const list = filtered();
+  const tbody = document.getElementById('tbody');
+
+  document.getElementById('st-total').textContent = tasks.length;
+  document.getElementById('st-todo').textContent  = tasks.filter(t=>t.status==='To Do').length;
+  document.getElementById('st-prog').textContent  = tasks.filter(t=>t.status==='In Progress').length;
+  document.getElementById('st-done').textContent  = tasks.filter(t=>t.status==='Done').length;
+
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state">
+      <span class="empty-icon">📋</span>
+      <h3>No tasks found</h3>
+      <p>Try adjusting your filters or add a new task.</p>
+    </div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = list.map(t => `
+    <tr>
+      <td>
+        <div class="task-name">${escHtml(t.name)}</div>
+        ${t.desc ? `<div class="task-desc">${escHtml(t.desc)}</div>` : ''}
+      </td>
+      <td><span class="dept-pill ${deptClass(t.dept)}">${t.dept}</span></td>
+      <td>
+        <div class="assignee-cell">
+          <div class="avatar" style="background:${AVATAR_COLORS[t.assignee]||'#8aa1b8'}">${initials(t.assignee)}</div>
+          <span style="color:${t.assignee==='Unassigned'?'var(--text-light)':'var(--text)'};font-weight:${t.assignee==='Unassigned'?'400':'600'}">${t.assignee}</span>
+        </div>
+      </td>
+      <td><span class="pill ${priorityClass(t.priority)}">${t.priority}</span></td>
+      <td>
+        <select class="pill status-select ${statusClass(t.status)}" onchange="quickStatus('${t.id}',this.value)">
+          <option${t.status==='To Do'?' selected':''}>To Do</option>
+          <option${t.status==='In Progress'?' selected':''}>In Progress</option>
+          <option${t.status==='Done'?' selected':''}>Done</option>
+        </select>
+      </td>
+      <td>${dueLabel(t.due)}</td>
+      <td>
+        <div class="actions">
+          <button class="btn btn-ghost btn-sm" onclick="openModal('${t.id}')" title="Edit">✎</button>
+          <button class="btn btn-danger" onclick="askDelete('${t.id}')" title="Delete">✕</button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function escHtml(s) {
+  return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]);
+}
+
+function quickStatus(id, val) {
+  const t = tasks.find(t=>t.id===id);
+  if (t) { t.status = val; save(); render(); }
+}
+
+function askDelete(id) {
+  deleteId = id;
+  document.getElementById('confirm-overlay').style.display = 'flex';
+}
+function closeConfirm() {
+  deleteId = null;
+  document.getElementById('confirm-overlay').style.display = 'none';
+}
+function confirmDelete() {
+  tasks = tasks.filter(t=>t.id!==deleteId);
+  save(); closeConfirm(); render();
+}
+
+function openModal(id) {
+  editId = id || null;
+  const t = id ? tasks.find(t=>t.id===id) : null;
+  document.getElementById('modal-title').textContent = t ? 'Edit task' : 'New task';
+  document.getElementById('f-name').value    = t?.name || '';
+  document.getElementById('f-desc').value    = t?.desc || '';
+  document.getElementById('f-dept2').value   = t?.dept || 'Marketing';
+  document.getElementById('f-assign2').value = t?.assignee || 'Unassigned';
+  document.getElementById('f-pri2').value    = t?.priority || 'Medium';
+  document.getElementById('f-stat2').value   = t?.status || 'To Do';
+  document.getElementById('f-due').value     = t?.due || '';
+  document.getElementById('overlay').style.display = 'flex';
+  setTimeout(() => document.getElementById('f-name').focus(), 60);
+}
+
+function closeModal() {
+  document.getElementById('overlay').style.display = 'none';
+  editId = null;
+}
+
+function saveTask() {
+  const name = document.getElementById('f-name').value.trim();
+  if (!name) { document.getElementById('f-name').focus(); return; }
+  const task = {
+    id:       editId || uid(),
+    name,
+    desc:     document.getElementById('f-desc').value.trim(),
+    dept:     document.getElementById('f-dept2').value,
+    assignee: document.getElementById('f-assign2').value,
+    priority: document.getElementById('f-pri2').value,
+    status:   document.getElementById('f-stat2').value,
+    due:      document.getElementById('f-due').value,
+    created:  editId ? (tasks.find(t=>t.id===editId)?.created || Date.now()) : Date.now(),
+  };
+  if (editId) { const i = tasks.findIndex(t=>t.id===editId); tasks[i] = task; }
+  else tasks.unshift(task);
+  save(); closeModal(); render();
+}
+
+// keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeModal(); closeConfirm(); }
+  if ((e.metaKey||e.ctrlKey) && e.key==='Enter') saveTask();
+});
+
+// filters
+['search','f-status','f-priority','f-dept','f-assignee'].forEach(id => {
+  document.getElementById(id).addEventListener('input', render);
+  document.getElementById(id).addEventListener('change', render);
+});
+
+// header date
+document.getElementById('header-date').textContent = new Date().toLocaleDateString('en-US',{weekday:'short',month:'long',day:'numeric',year:'numeric'});
+
+load();
+</script>
+</body>
+</html>
