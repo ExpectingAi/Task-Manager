@@ -142,6 +142,45 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy);box-shadow:0 0 
 .confirm-box p{color:var(--text-soft);font-size:12px;margin-bottom:18px}
 .confirm-actions{display:flex;gap:8px;justify-content:center}
 
+
+/* INLINE DROPDOWNS - dept, assignee, priority */
+.dept-select{border:none!important;background:transparent!important;font-family:inherit;font-size:9.5px;font-weight:700;cursor:pointer;padding:3px 4px!important;height:auto!important;box-shadow:none!important;letter-spacing:.04em;text-transform:uppercase;width:auto}
+.assignee-select{border:none!important;background:transparent!important;font-family:inherit;font-size:11.5px;font-weight:600;cursor:pointer;padding:0 2px!important;height:auto!important;box-shadow:none!important;width:auto;color:var(--text)}
+.priority-select{border:none!important;background:transparent!important;font-family:inherit;font-size:10px;font-weight:700;cursor:pointer;padding:3px 4px!important;height:auto!important;box-shadow:none!important;border-radius:20px;width:auto}
+
+/* COMMENT PANEL */
+.comment-overlay{position:fixed;inset:0;background:rgba(29,70,100,.35);z-index:300;display:flex;justify-content:flex-end;backdrop-filter:blur(2px)}
+.comment-panel{background:var(--white);width:100%;max-width:400px;height:100%;display:flex;flex-direction:column;box-shadow:-8px 0 32px rgba(29,70,100,.12);animation:slideInRight .22s ease}
+@keyframes slideInRight{from{transform:translateX(100%)}to{transform:translateX(0)}}
+.cp-top{height:4px;background:linear-gradient(90deg,var(--navy),var(--lavender),var(--teal),var(--amber));flex-shrink:0}
+.cp-header{padding:16px 18px;border-bottom:1px solid var(--line-soft);flex-shrink:0}
+.cp-header h3{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:2px}
+.cp-task-name{font-size:11px;color:var(--text-soft);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cp-header-row{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
+.cp-body{flex:1;overflow-y:auto;padding:14px 18px;display:flex;flex-direction:column;gap:10px}
+.comment-item{display:flex;gap:10px}
+.comment-avatar{width:28px;height:28px;border-radius:50%;color:#fff;font-size:10px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.comment-bubble{flex:1}
+.comment-meta{display:flex;align-items:baseline;gap:6px;margin-bottom:3px}
+.comment-author{font-size:11px;font-weight:700;color:var(--navy)}
+.comment-time{font-size:10px;color:var(--text-light)}
+.comment-text{font-size:12px;color:var(--text-soft);line-height:1.5;font-weight:500;background:var(--bg-soft);padding:8px 10px;border-radius:0 8px 8px 8px}
+.comment-item:hover .comment-del{opacity:1}
+.comment-del{opacity:0;transition:opacity .15s;background:none;border:none;cursor:pointer;font-size:11px;color:var(--text-light);padding:2px 4px;border-radius:4px;line-height:1}
+.comment-del:hover{color:#c44;background:rgba(196,68,68,.08)}
+.comment-meta{display:flex;align-items:baseline;gap:6px;margin-bottom:3px;justify-content:space-between}
+.comment-meta-left{display:flex;align-items:baseline;gap:6px}
+.cp-footer{padding:12px 18px;border-top:1px solid var(--line-soft);flex-shrink:0}
+.cp-input-row{display:flex;gap:8px;align-items:flex-end}
+.cp-who{margin-bottom:8px}
+.cp-textarea{flex:1;height:70px;resize:none;padding:8px 10px;font-size:12px}
+.comment-count{display:inline-flex;align-items:center;justify-content:center;min-width:16px;height:16px;background:var(--lavender);color:#fff;font-size:9px;font-weight:700;border-radius:8px;padding:0 4px;margin-left:4px}
+.btn-comment{display:inline-flex;align-items:center;gap:4px;font-size:11px}
+.no-comments{text-align:center;padding:32px 16px;color:var(--text-light);font-size:12px}
+@media(max-width:680px){
+  .comment-panel{max-width:100%}
+}
+
 /* DESKTOP */
 @media(min-width:680px){
   .container{padding:32px 40px 64px}
@@ -274,7 +313,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy);box-shadow:0 0 
 </div>
 
 <script>
-const STORAGE_KEY='expecting.tasks.v5';
+const STORAGE_KEY='expecting.tasks.v7';
 const AV={Nadav:'#1d4664',Dana:'#9474cc',Danielle:'#73C0CA',Or:'#FEC006',Unassigned:'#8aa1b8'};
 let tasks=[],editId=null,deleteId=null;
 
@@ -321,9 +360,26 @@ function render(){
   tbody.innerHTML=!list.length?`<tr><td colspan="7">${empty}</td></tr>`:list.map(t=>`
     <tr>
       <td><div class="task-name-cell">${esc(t.name)}</div>${t.desc?`<div class="task-desc-cell">${esc(t.desc)}</div>`:''}</td>
-      <td><span class="dept-pill ${dc(t.dept)}">${t.dept}</span></td>
-      <td><div class="assignee-cell"><div class="avatar" style="background:${AV[t.assignee]||'#8aa1b8'}">${ini(t.assignee)}</div>${esc(t.assignee)}</div></td>
-      <td><span class="pill ${pc(t.priority)}">${t.priority}</span></td>
+      <td><select class="dept-pill dept-select ${dc(t.dept)}" onchange="qf('${t.id}','dept',this.value)">
+        <option${t.dept==='Marketing'?' selected':''}>Marketing</option>
+        <option${t.dept==='Sales'?' selected':''}>Sales</option>
+        <option${t.dept==='Product'?' selected':''}>Product</option>
+        <option${t.dept==='General'?' selected':''}>General</option>
+      </select></td>
+      <td><div class="assignee-cell"><div class="avatar" style="background:${AV[t.assignee]||'#8aa1b8'}">${ini(t.assignee)}</div>
+        <select class="assignee-select" onchange="qf('${t.id}','assignee',this.value)">
+          <option${t.assignee==='Nadav'?' selected':''}>Nadav</option>
+          <option${t.assignee==='Dana'?' selected':''}>Dana</option>
+          <option${t.assignee==='Danielle'?' selected':''}>Danielle</option>
+          <option${t.assignee==='Or'?' selected':''}>Or</option>
+          <option${t.assignee==='Unassigned'?' selected':''}>Unassigned</option>
+        </select>
+      </div></td>
+      <td><select class="pill priority-select ${pc(t.priority)}" onchange="qf('${t.id}','priority',this.value)">
+        <option${t.priority==='High'?' selected':''}>High</option>
+        <option${t.priority==='Medium'?' selected':''}>Medium</option>
+        <option${t.priority==='Low'?' selected':''}>Low</option>
+      </select></td>
       <td><select class="pill status-select ${sc(t.status)}" onchange="qs('${t.id}',this.value)">
         <option${t.status==='To Do'?' selected':''}>To Do</option>
         <option${t.status==='In Progress'?' selected':''}>In Progress</option>
@@ -331,6 +387,7 @@ function render(){
       </select></td>
       <td>${due(t.due,false)}</td>
       <td><div class="row-actions">
+        <button class="btn btn-ghost btn-sm btn-icon" title="Comments" onclick="openComments('${t.id}')">💬${(t.comments&&t.comments.length)?`<span class='comment-count'>${t.comments.length}</span>`:''}</button>
         <button class="btn btn-ghost btn-sm btn-icon" onclick="openModal('${t.id}')">✎</button>
         <button class="btn btn-ghost btn-sm btn-icon" style="color:#c44;border-color:#f0a0a0" onclick="askDel('${t.id}')">✕</button>
       </div></td>
@@ -348,8 +405,17 @@ function render(){
         </div>
       </div>
       <div class="tc-meta">
-        <span class="dept-pill ${dc(t.dept)}">${t.dept}</span>
-        <span class="pill ${pc(t.priority)}">${t.priority}</span>
+        <select class="dept-pill dept-select ${dc(t.dept)}" onchange="qf('${t.id}','dept',this.value)">
+          <option${t.dept==='Marketing'?' selected':''}>Marketing</option>
+          <option${t.dept==='Sales'?' selected':''}>Sales</option>
+          <option${t.dept==='Product'?' selected':''}>Product</option>
+          <option${t.dept==='General'?' selected':''}>General</option>
+        </select>
+        <select class="pill priority-select ${pc(t.priority)}" onchange="qf('${t.id}','priority',this.value)">
+          <option${t.priority==='High'?' selected':''}>High</option>
+          <option${t.priority==='Medium'?' selected':''}>Medium</option>
+          <option${t.priority==='Low'?' selected':''}>Low</option>
+        </select>
         <select class="pill status-select ${sc(t.status)}" onchange="qs('${t.id}',this.value)">
           <option${t.status==='To Do'?' selected':''}>To Do</option>
           <option${t.status==='In Progress'?' selected':''}>In Progress</option>
@@ -357,13 +423,94 @@ function render(){
         </select>
       </div>
       <div class="tc-footer">
-        <div class="tc-assignee"><div class="avatar" style="background:${AV[t.assignee]||'#8aa1b8'}">${ini(t.assignee)}</div>${esc(t.assignee)}</div>
-        ${due(t.due,true)}
+        <div class="tc-assignee">
+          <div class="avatar" style="background:${AV[t.assignee]||'#8aa1b8'}">${ini(t.assignee)}</div>
+          <select class="assignee-select" onchange="qf('${t.id}','assignee',this.value)">
+            <option${t.assignee==='Nadav'?' selected':''}>Nadav</option>
+            <option${t.assignee==='Dana'?' selected':''}>Dana</option>
+            <option${t.assignee==='Danielle'?' selected':''}>Danielle</option>
+            <option${t.assignee==='Or'?' selected':''}>Or</option>
+            <option${t.assignee==='Unassigned'?' selected':''}>Unassigned</option>
+          </select>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          ${due(t.due,true)}
+          <button class="btn btn-ghost btn-sm btn-comment" onclick="openComments('${t.id}')">💬${(t.comments&&t.comments.length)?`<span class='comment-count'>${t.comments.length}</span>`:''}</button>
+        </div>
       </div>
     </div>`).join('');
 }
 
 function qs(id,val){const t=tasks.find(t=>t.id===id);if(t){t.status=val;save();render();}}
+function qf(id,field,val){
+  const t=tasks.find(t=>t.id===id);
+  if(t){
+    t[field]=val;
+    // update avatar if assignee changed
+    save();render();
+    // if comment panel is open for this task, keep it in sync
+    if(cpTaskId===id) document.getElementById('cp-task-name').textContent=t.name;
+  }
+}
+
+// ── COMMENTS ──
+let cpTaskId=null;
+function openComments(id){
+  cpTaskId=id;
+  const t=tasks.find(t=>t.id===id);
+  if(!t)return;
+  document.getElementById('cp-task-name').textContent=t.name;
+  document.getElementById('cp-overlay').style.display='flex';
+  renderComments(t);
+  setTimeout(()=>document.getElementById('cp-text').focus(),100);
+}
+function closeComments(){document.getElementById('cp-overlay').style.display='none';cpTaskId=null;}
+function renderComments(t){
+  const body=document.getElementById('cp-body');
+  const comments=t.comments||[];
+  if(!comments.length){body.innerHTML='<div class="no-comments">💬 No comments yet.<br>Be the first to add one!</div>';return;}
+  body.innerHTML=comments.map(c=>`
+    <div class="comment-item">
+      <div class="comment-avatar" style="background:${AV[c.author]||'#8aa1b8'}">${ini(c.author)}</div>
+      <div class="comment-bubble">
+        <div class="comment-meta">
+          <div class="comment-meta-left">
+            <span class="comment-author">${esc(c.author)}</span>
+            <span class="comment-time">${new Date(c.ts).toLocaleDateString('en-US',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'})}</span>
+          </div>
+          <button class="comment-del" onclick="deleteComment('${c.id}')" title="Delete comment">✕</button>
+        </div>
+        <div class="comment-text">${esc(c.text)}</div>
+      </div>
+    </div>`).join('');
+  body.scrollTop=body.scrollHeight;
+}
+function addComment(){
+  const text=document.getElementById('cp-text').value.trim();
+  const author=document.getElementById('cp-author').value;
+  if(!text||!cpTaskId)return;
+  const t=tasks.find(t=>t.id===cpTaskId);
+  if(!t)return;
+  if(!t.comments)t.comments=[];
+  t.comments.push({id:uid(),author,text,ts:Date.now()});
+  save();render();
+  renderComments(t);
+  document.getElementById('cp-text').value='';
+}
+function deleteComment(cid){
+  const t=tasks.find(t=>t.id===cpTaskId);
+  if(!t||!t.comments)return;
+  t.comments=t.comments.filter(c=>c.id!==cid);
+  save();render();
+  renderComments(t);
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){closeModal();closeConfirm();closeComments();}
+  if((e.metaKey||e.ctrlKey)&&e.key==='Enter'){
+    if(document.getElementById('cp-overlay').style.display!=='none')addComment();
+    else saveTask();
+  }
+});
 function askDel(id){deleteId=id;document.getElementById('confirm-overlay').style.display='flex';}
 function closeConfirm(){deleteId=null;document.getElementById('confirm-overlay').style.display='none';}
 function confirmDelete(){tasks=tasks.filter(t=>t.id!==deleteId);save();closeConfirm();render();}
@@ -390,7 +537,7 @@ function saveTask(){
   save();closeModal();render();
 }
 
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeConfirm();}if((e.metaKey||e.ctrlKey)&&e.key==='Enter')saveTask();});
+
 ['search','f-status','f-priority','f-dept','f-assignee'].forEach(id=>{
   document.getElementById(id).addEventListener('input',render);
   document.getElementById(id).addEventListener('change',render);
@@ -398,5 +545,34 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeModal();closeC
 document.getElementById('header-date').textContent=new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
 load();
 </script>
+
+<!-- COMMENT PANEL -->
+<div class="comment-overlay" id="cp-overlay" style="display:none" onclick="if(event.target===this)closeComments()">
+  <div class="comment-panel">
+    <div class="cp-top"></div>
+    <div class="cp-header">
+      <div class="cp-header-row">
+        <div style="min-width:0">
+          <h3>Comments</h3>
+          <div class="cp-task-name" id="cp-task-name"></div>
+        </div>
+        <button class="btn btn-ghost btn-sm" onclick="closeComments()">✕</button>
+      </div>
+    </div>
+    <div class="cp-body" id="cp-body"></div>
+    <div class="cp-footer">
+      <div class="cp-who">
+        <select id="cp-author" style="height:30px;font-size:11px;width:auto;padding:0 8px">
+          <option>Nadav</option><option>Dana</option><option>Danielle</option><option>Or</option>
+        </select>
+      </div>
+      <div class="cp-input-row">
+        <textarea class="cp-textarea" id="cp-text" placeholder="Add a comment…"></textarea>
+        <button class="btn btn-primary btn-sm" onclick="addComment()" style="height:70px;padding:0 12px">Post</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
