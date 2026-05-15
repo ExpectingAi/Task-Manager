@@ -110,9 +110,9 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy);box-shadow:0 0 
 
 .task-name-cell{font-weight:600;color:var(--navy);line-height:1.4}
 .task-desc-cell{font-size:10.5px;color:var(--text-light);margin-top:2px}
-.due-over{color:#c44;font-weight:700;font-size:11px}
-.due-soon{color:#a87800;font-weight:700;font-size:11px}
-.due-ok{color:var(--text-soft);font-size:11px}
+.due-over{color:#c44;font-weight:700;font-size:11px;white-space:nowrap}
+.due-soon{color:#a87800;font-weight:700;font-size:11px;white-space:nowrap}
+.due-ok{color:var(--text-soft);font-size:11px;white-space:nowrap}
 
 /* EMPTY */
 .empty-state{text-align:center;padding:48px 24px;background:var(--white);border-radius:14px;border:1px solid var(--line-soft)}
@@ -385,7 +385,7 @@ function render(){
         <option${t.status==='In Progress'?' selected':''}>In Progress</option>
         <option${t.status==='Done'?' selected':''}>Done</option>
       </select></td>
-      <td>${due(t.due,false)}</td>
+      <td style="white-space:nowrap">${due(t.due,false)}</td>
       <td><div class="row-actions">
         <button class="btn btn-ghost btn-sm btn-icon" title="Comments" onclick="openComments('${t.id}')">💬${(t.comments&&t.comments.length)?`<span class='comment-count'>${t.comments.length}</span>`:''}</button>
         <button class="btn btn-ghost btn-sm btn-icon" onclick="openModal('${t.id}')">✎</button>
