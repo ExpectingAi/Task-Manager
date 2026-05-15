@@ -72,7 +72,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy);box-shadow:0 0 
 .table-card{display:none;background:var(--white);border:1px solid var(--line-soft);border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
 .tbl{width:100%;border-collapse:collapse;font-size:12px}
 .tbl thead th{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:.13em;color:var(--text-light);background:var(--bg-soft);padding:10px 14px;text-align:left;white-space:nowrap;border-bottom:1px solid var(--line)}
-.tbl tbody td{padding:10px 14px;border-bottom:1px solid var(--line-soft);vertical-align:middle}
+.tbl tbody td{padding:10px 12px;border-bottom:1px solid var(--line-soft);vertical-align:middle;white-space:nowrap}.tbl tbody td:first-child{white-space:normal}
 .tbl tbody tr:last-child td{border-bottom:none}
 .tbl tbody tr:hover{background:#fafbfd}
 .row-actions{display:flex;gap:4px;opacity:0;transition:opacity .15s}
@@ -259,7 +259,7 @@ input:focus,select:focus,textarea:focus{border-color:var(--navy);box-shadow:0 0 
   <div class="table-card">
     <table class="tbl">
       <thead><tr>
-        <th style="width:33%">Task</th><th>Dept</th><th>Assignee</th><th>Priority</th><th>Status</th><th>Due</th><th style="width:72px"></th>
+        <th style="width:24%">Task</th><th style="white-space:nowrap">Dept</th><th style="white-space:nowrap">Assignee</th><th style="white-space:nowrap">Priority</th><th style="white-space:nowrap">Status</th><th style="white-space:nowrap">Due</th><th style="width:88px"></th>
       </tr></thead>
       <tbody id="tbody"></tbody>
     </table>
